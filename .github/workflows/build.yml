@@ -15,7 +15,8 @@ env:
 
 jobs:
   min-wasm:
-    runs-on: "ubuntu-20.04"
+    # https://github.com/godotengine/godot/issues/31123
+    runs-on: "windows-2022"
     name: Godot wasm
 
     steps:
@@ -57,7 +58,6 @@ jobs:
           mv custom.py godot/custom.py
           
       - name: Compilation
-        shell: sh
         run: |
           cd godot
           scons p=javascript target=release --jobs=2 ${{env.SCONSFLAGS}}

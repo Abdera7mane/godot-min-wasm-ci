@@ -5,8 +5,6 @@
 
 name: Build
 on: 
-  push:
-  pull_request:
   workflow_dispatch:
     inputs:
       javascript_eval:
@@ -17,10 +15,25 @@ on:
         options: 
         - 'yes'
         - 'no'
-
+      threads:
+        type: choice
+        description: enable/disable threads
+        required: true
+        default: 'no'
+        options: 
+        - 'yes'
+        - 'no'
+      gdnative:
+        type: choice
+        description: enable/disable GDNative
+        required: true
+        default: 'no'
+        options: 
+        - 'yes'
+        - 'no'
 env:
   GODOT_BASE_BRANCH: '3.4'
-  SCONSFLAGS: verbose=yes tools=no debug_symbols=no use_lto=yes disable_3d=yes disable_advanced_gui=yes
+  SCONSFLAGS: verbose=yes tools=no production=yes optimize=size disable_3d=yes disable_advanced_gui=yes
   EM_VERSION: 2.0.27
   EM_CACHE_FOLDER: "emsdk-cache"
   PYTHON_VERSION: 3.8.10
@@ -72,7 +85,7 @@ jobs:
       - name: Compilation
         run: |
           cd godot
-          scons p=javascript target=release --jobs=2 javascript_eval=${{github.event.inputs.javascript_eval}} ${{env.SCONSFLAGS}}
+          scons p=javascript target=release --jobs=2 javascript_eval=${{github.event.inputs.javascript_eval}} threads_enabled=${{github.event.inputs.threads}} gdnative_enabled=${{github.event.inputs.gdnative}} ${{env.SCONSFLAGS}}
           ls -l bin/
 
       - name: Upload artifact
